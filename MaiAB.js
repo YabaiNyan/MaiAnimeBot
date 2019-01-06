@@ -6,7 +6,7 @@ const Discord = require('discord.js')
 const client = new Discord.Client()
 
 // Discord stuffs
-const TOKEN = '<-- Put your discord bot api key here -->'
+const TOKEN = '<-- Enter Your Bot Token Here! -->'
 const PREFIX = '!'
 
 client.on('ready', () => {
