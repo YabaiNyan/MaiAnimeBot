@@ -9,15 +9,6 @@ const client = new Discord.Client()
 const TOKEN = '<-- Put your discord bot api key here -->'
 const PREFIX = '!'
 
-// Check if in testing
-var debug
-if (process.argv[2].toLowerCase() == "verbose"){
-    debug = true;
-}else{
-    debug = false;
-}
-
-
 client.on('ready', () => {
     console.log('Mai is ready! <3')
 })
@@ -25,27 +16,17 @@ client.on('ready', () => {
 client.on('error', console.error);
 
 client.on('message', async message => {
+    if (message.author.bot) return;
     const command = message.content.toLowerCase().split(' ')[0]
     const arguments = message.content.split(' ')
     arguments.shift()
     if (command == `${PREFIX}ping`) {
         return message.reply('I\'m here!')
     }
-    if (command == `${PREFIX}purge`) {
-        if (arguments.length < 1) {
-            return message.channel.send('Please tell Mai-Chan how many messages you want to delete! >a<')
-        }
-        if (arguments[0] > 100){
-            return message.channel.send('Mai-Chan can only delete up to 100 messages at a time you know!')
-        }else{
-            let deletedMessages = await message.channel.bulkDelete(arguments[0], true)
-            return message.channel.send(`Mai-Chan Deleted ${deletedMessages.size} messages!`)
-        }
-    }
-    var matches = command.match(/\<(.*?)\>/);
+    var matches = message.content.toLowerCase().match(/\<(.+?)\>/);
     if (matches) {
         var query = matches[1];
-        console.log(query)
+        if(matches[1].startsWith("@")) return
         malScraper.getResultsFromSearch(query)
           .then((data) => {
               var name = data[0].name;
@@ -55,8 +36,36 @@ client.on('message', async message => {
               var score = data[0].payload.score;
               var status = data[0].payload.status;
 
-              console.log(name, url, image, year, score, status)
-              return message.channel.send(name)
+              message.channel.send({content: url, embed:{
+                    title: name,
+                    url: url,
+                    color: 65508,
+                    footer: {
+                        icon_url: "https://raw.githubusercontent.com/YabaiNyan/MaiAnimeBot/master/mabicon.jpeg",
+                        text: "Mai Bot"
+                    },
+                    image: {
+                        url: image
+                    },
+                    timestamp: new Date(),
+                    fields: [
+                        {
+                          name: "Score",
+                          value: score,
+                          inline: true
+                        },
+                        {
+                          name: "Year",
+                          value: year,
+                          inline: true
+                        },
+                        {
+                          name: "Status",
+                          value: status,
+                          inline: true
+                        }
+                    ]
+              }})
           })
           .catch((err) => console.log(err))
     }
