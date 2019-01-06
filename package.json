@@ -1,0 +1,23 @@
+{
+  "name": "maianimebot",
+  "version": "1.0.0",
+  "description": "MyAnimeList link finder bot for Discord",
+  "main": "MaiAB.js",
+  "scripts": {
+    "test": "node MaiAB.js verbose"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/YabaiNyan/MaiAnimeBot.git"
+  },
+  "author": "YabaiNyan",
+  "license": "GPL-3.0",
+  "bugs": {
+    "url": "https://github.com/YabaiNyan/MaiAnimeBot/issues"
+  },
+  "homepage": "https://github.com/YabaiNyan/MaiAnimeBot#readme",
+  "dependencies": {
+    "discord.js": "^11.4.2",
+    "mal-scraper": "^2.4.5"
+  }
+}
