@@ -24,19 +24,23 @@ client.on('message', async message => {
         return message.reply('I\'m here!')
     }
     if (command == `${PREFIX}mal`) {
-        handleMalQuery(arguments.join(" "), message);
+        handleMalQuery(arguments.join(" "), message, true);
     }
     var matches = message.content.match(/\<(.+?)\>/);
     if (matches) {
         var query = matches[1];
+        var deletemessage = false;
         if(matches[1].startsWith("@")||matches[1].startsWith(":")||matches[1].startsWith("#")) return
-        handleMalQuery(query, message);
+        if(matches[0] == message.content){
+            deletemessage = true;
+        }
+        handleMalQuery(query, message, deletemessage);
     }
 })
 
 client.login(TOKEN)
 
-function handleMalQuery(query, message){
+function handleMalQuery(query, message, deletemessage){
     malScraper.getResultsFromSearch(query)
     .then((data) => {
         var name = data[0].name;
@@ -51,8 +55,8 @@ function handleMalQuery(query, message){
               url: url,
               color: 65508,
               footer: {
-                  icon_url: "https://raw.githubusercontent.com/YabaiNyan/MaiAnimeBot/master/mabicon.jpeg",
-                  text: "Mai Bot"
+                  icon_url: message.author.avatarURL,
+                  text: message.author.username+"#"+message.author.discriminator
               },
               image: {
                   url: image
@@ -76,6 +80,7 @@ function handleMalQuery(query, message){
                   }
               ]
         }})
+        if (deletemessage) message.delete().catch((err)=>{}); 
     })
     .catch((err) => console.log(err))
 }
