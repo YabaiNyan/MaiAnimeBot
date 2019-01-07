@@ -62,7 +62,6 @@ function handleMalQuery(query, message, deletemessage, is7up){
         var exist7up = false;
         if (is7up){
             for (i = 0; i < data.length; i++){
-                console.log(i, data[i].payload.score)
                 if(parseFloat(data[i].payload.score) >= 7){
                     exist7up = true;
                     dataindex = i
