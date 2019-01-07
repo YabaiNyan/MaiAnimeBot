@@ -78,12 +78,9 @@ function handleMalQuery(query, message, deletemessage, is7up) {
                     return message.channel.send("Mai couldn't find a result that has a score above 7!")
                 }
             }
-            var candidateShow = above7[0] || data[0]
-            var name = candidateShow.name
-            var url = candidateShow.url
-            var year = candidateShow.payload.start_year
-            var score = candidateShow.payload.score
-            var status = candidateShow.payload.status
+            var candidateShow = above7 ? above7[0] : data[0]
+            var { name, url } = candidateShow.name
+            var { start_year: year, score, status } = candidateShow.payload
             malScraper.getInfoFromURL(url)
                 .then((data) => {
                     var image = data.picture
@@ -151,17 +148,15 @@ function handleMalQuery(query, message, deletemessage, is7up) {
                     })
                     if (deletemessage) message.delete().catch((err) => { })
                 })
-                .catch((err) => console.log(err))
+                .catch((err) => console.error(err))
         })
-        .catch((err) => console.log(err))
+        .catch((err) => console.error(err))
 }
 
 function handleSeiyuuQuery(query, message, deletemessage) {
     Mal.search("person", query, { limit: 1, Page: 1 }).then(j => {
         var result = j.results[0]
-        var name = result.name
-        var url = result.url
-        var image = result.image_url
+        var { name, url, image_url: image } = result
         var embedobj = {
             title: name,
             url: url,
@@ -174,10 +169,9 @@ function handleSeiyuuQuery(query, message, deletemessage) {
                 url: image
             },
             timestamp: new Date(),
-            fields: [
-
-            ]
+            fields: []
         }
+
         Mal.person(result.mal_id).then(j => {
             var birthday = new Date(Date.parse(j.birthday))
             var formattedbirthday
@@ -218,7 +212,6 @@ function handleSeiyuuQuery(query, message, deletemessage) {
 function toTweetLength(input) {
     if (input.length <= 140) {
         return input
-    } else {
-        return input.slice(0, 140) + "..."
     }
+    return input.slice(0, 140) + "..."
 }
