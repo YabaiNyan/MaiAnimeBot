@@ -171,7 +171,6 @@ function handleMalQuery(query, message, deletemessage, is7up){
 }
 
 function handleSeiyuuQuery(query, message, deletemessage){
-    console.log(1)
     Mal.search("person", query, {limit: 1, Page: 1}).then(j => {
         var result = j.results[0]
         var name = result.name;
@@ -215,7 +214,6 @@ function handleSeiyuuQuery(query, message, deletemessage){
                 about = about.split("\n")
                 for (var element of about){
                     var clean = element.replace(/(\r\n|\n|\r|\\n)/gm,"").split(/:(.+)/);
-                    console.log(clean)
                     if(clean.length>=2){
                         embedobj.fields.unshift({
                             name: clean[0],
