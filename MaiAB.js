@@ -1,6 +1,9 @@
 // Req MAL api
 const malScraper = require('mal-scraper')
 
+// Other MAL api for scraping Seiyuus
+const Mal = require("node-myanimelist");
+
 // Req Discord api
 const Discord = require('discord.js')
 const client = new Discord.Client()
@@ -25,6 +28,7 @@ client.on('message', async message => {
     if (command == `${PREFIX}ping`) return message.reply('I\'m here!');
     if (command == `${PREFIX}mal`) handleMalQuery(arguments.join(" "), message, true, false);
     if (command == `${PREFIX}7up`) handleMalQuery(arguments.join(" "), message, true, true);
+    if (command == `${PREFIX}seiyuu`) handleSeiyuuQuery(arguments.join(" "), message, true);
     if (command == `${PREFIX}purge`) {
         if (guildowner == messageauthor) {
             if (arguments.length < 1) {
@@ -50,6 +54,16 @@ client.on('message', async message => {
             deletemessage = true;
         }
         handleMalQuery(query, message, deletemessage, false);
+    }
+
+    var seiyuumatches = message.content.match(/\[(.+?)\]/);
+    if (seiyuumatches) {
+        var query = seiyuumatches[1];
+        var deletemessage = false;
+        if(seiyuumatches[0] == message.content){
+            deletemessage = true;
+        }
+        handleSeiyuuQuery(query, message, deletemessage);
     }
 })
 
@@ -154,6 +168,66 @@ function handleMalQuery(query, message, deletemessage, is7up){
             .catch((err) => console.log(err))
     })
     .catch((err) => console.log(err))
+}
+
+function handleSeiyuuQuery(query, message, deletemessage){
+    console.log(1)
+    Mal.search("person", query, {limit: 1, Page: 1}).then(j => {
+        var result = j.results[0]
+        var name = result.name;
+        var url = result.url;
+        var image = result.image_url;
+        var embedobj = {
+            title: name,
+            url: url,
+            color: 16728193,
+            footer: {
+                icon_url: message.author.avatarURL,
+                text: message.author.username+"#"+message.author.discriminator
+            },
+            image: {
+                url: image
+            },
+            timestamp: new Date(),
+            fields: [
+                
+            ]
+        }
+        Mal.person(result.mal_id).then(j => {
+            var birthday = new Date(Date.parse(j.birthday))
+            var formattedbirthday;
+            var birthdayexists = false;
+            if(!isNaN(birthday.getFullYear())){
+                formattedbirthday = birthday.getDay() + "/" + birthday.getMonth() + "/" + birthday.getFullYear()
+                birthdayexists = true;
+            }else if(!isNaN(birthday.getMonth())){
+                formattedbirthday = birthday.getDay() + "/" + birthday.getMonth()
+                birthdayexists = true;
+            }
+            if(birthdayexists){
+                embedobj.fields.unshift({
+                    name: "Birthday",
+                    value: formattedbirthday,
+                })
+            }
+            var about = j.about
+            if (typeof(about) == "string"){
+                about = about.split("\n")
+                for (var element of about){
+                    var clean = element.replace(/(\r\n|\n|\r|\\n)/gm,"").split(/:(.+)/);
+                    console.log(clean)
+                    if(clean.length>=2){
+                        embedobj.fields.unshift({
+                            name: clean[0],
+                            value: clean[1]
+                        })
+                    }
+                }
+            }
+            message.channel.send({content: url, embed: embedobj})
+            if (deletemessage) message.delete().catch((err)=>{}); 
+        });
+    });
 }
 
 function toTweetLength(input){
