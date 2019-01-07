@@ -19,9 +19,27 @@ client.on('message', async message => {
     if (message.author.bot) return;
     const command = message.content.toLowerCase().split(' ')[0]
     const arguments = message.content.split(' ')
+    const guildowner = message.channel.guild.ownerID;
+    const messageauthor = message.author.id;
     arguments.shift()
     if (command == `${PREFIX}ping`) return message.reply('I\'m here!');
-    if (command == `${PREFIX}mal`) handleMalQuery(arguments.join(" "), message, true);
+    if (command == `${PREFIX}mal`) handleMalQuery(arguments.join(" "), message, true, false);
+    if (command == `${PREFIX}7up`) handleMalQuery(arguments.join(" "), message, true, true);
+    if (command == `${PREFIX}purge`) {
+        if (guildowner == messageauthor) {
+            if (arguments.length < 1) {
+                return message.channel.send('Please tell Mai-Chan how many messages you want to delete! >a<')
+            }
+            if (arguments[0] > 10){
+                return message.channel.send('Mai-Chan can only delete up to 10 messages at a time you know!')
+            }else{
+                let deletedMessages = await message.channel.bulkDelete(arguments[0], true)
+                return message.channel.send(`Mai-Chan Deleted ${deletedMessages.size} messages!`)
+            }
+        }else{
+            return message.channel.send("Only the Owner of this Guild/Server can use this command")
+        }
+    }
 
     var matches = message.content.match(/\<(.+?)\>/);
     if (matches) {
@@ -31,21 +49,36 @@ client.on('message', async message => {
         if(matches[0] == message.content){
             deletemessage = true;
         }
-        handleMalQuery(query, message, deletemessage);
+        handleMalQuery(query, message, deletemessage, false);
     }
 })
 
 client.login(TOKEN)
 
-function handleMalQuery(query, message, deletemessage){
+function handleMalQuery(query, message, deletemessage, is7up){
     malScraper.getResultsFromSearch(query)
     .then((data) => {
-        var name = data[0].name;
-        var url = data[0].url;
-        var image = data[0].image_url;
-        var year = data[0].payload.start_year;
-        var score = data[0].payload.score;
-        var status = data[0].payload.status;
+        var dataindex = 0;
+        var exist7up = false;
+        if (is7up){
+            for (i = 0; i < data.length; i++){
+                console.log(i, data[i].payload.score)
+                if(parseFloat(data[i].payload.score) >= 7){
+                    exist7up = true;
+                    dataindex = i
+                    break
+                }
+            }
+        }
+        if (is7up && !exist7up){
+            return message.channel.send("Mai couldn't find a result that has a score above 7!")
+        }
+        var name = data[dataindex].name;
+        var url = data[dataindex].url;
+        var image = data[dataindex].image_url;
+        var year = data[dataindex].payload.start_year;
+        var score = data[dataindex].payload.score;
+        var status = data[dataindex].payload.status;
         var synopsis;
         var genres;
         var studios;
