@@ -1,3 +1,5 @@
+require('dotenv').config()
+
 // Req MAL api
 const malScraper = require('mal-scraper')
 
@@ -9,12 +11,10 @@ const Discord = require('discord.js')
 const client = new Discord.Client()
 
 // Discord stuffs
-const TOKEN = '<-- Enter Your Bot Token Here! -->'
+const TOKEN = process.env.TOKEN
 const PREFIX = '!'
 
-client.on('ready', () => {
-    console.log('Mai is ready! <3')
-})
+client.on('ready', () => console.log('Mai is ready! <3'))
 
 client.on('error', console.error)
 
@@ -71,7 +71,7 @@ client.login(TOKEN)
 
 function handleMalQuery(query, message, deletemessage, is7up) {
     malScraper.getResultsFromSearch(query)
-        .then((data) => {
+        .then(data => {
             if (is7up) {
                 var above7 = data.filter(show => show.payload.score >= 7)
                 if (is7up && above7.length === 0) {
@@ -82,7 +82,7 @@ function handleMalQuery(query, message, deletemessage, is7up) {
             var { name, url } = candidateShow.name
             var { start_year: year, score, status } = candidateShow.payload
             malScraper.getInfoFromURL(url)
-                .then((data) => {
+                .then(data => {
                     var image = data.picture
                     var genres = "`" + data.genres.join("` `") + "`"
                     var studios = data.studios.join(", ")
@@ -177,19 +177,26 @@ function handleSeiyuuQuery(query, message, deletemessage) {
             var formattedbirthday
             var birthdayexists = false
             var bdaymonth = birthday.getMonth() + 1
-            if (!isNaN(birthday.getFullYear())) {
+
+            if (birthday.getFullYear()) {
+
                 formattedbirthday = birthday.getDate() + "/" + bdaymonth + "/" + birthday.getFullYear()
                 birthdayexists = true
-            } else if (!isNaN(birthday.getMonth())) {
+
+            } else if (birthday.getMonth()) {
+
                 formattedbirthday = birthday.getDate() + "/" + bdaymonth
                 birthdayexists = true
+                
             }
+
             if (birthdayexists) {
                 embedobj.fields.unshift({
                     name: "Birthday",
                     value: formattedbirthday,
                 })
             }
+
             var about = j.about
             if (typeof (about) == "string") {
                 about = about.split("\n")

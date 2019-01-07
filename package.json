@@ -18,6 +18,7 @@
   "homepage": "https://github.com/YabaiNyan/MaiAnimeBot#readme",
   "dependencies": {
     "discord.js": "^11.4.2",
+    "dotenv": "^6.2.0",
     "mal-scraper": "^2.4.5",
     "node-myanimelist": "^1.1.1"
   }
