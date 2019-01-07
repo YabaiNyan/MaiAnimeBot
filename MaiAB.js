@@ -196,11 +196,12 @@ function handleSeiyuuQuery(query, message, deletemessage){
             var birthday = new Date(Date.parse(j.birthday))
             var formattedbirthday;
             var birthdayexists = false;
+            var bdaymonth = birthday.getMonth() + 1;
             if(!isNaN(birthday.getFullYear())){
-                formattedbirthday = birthday.getDay() + "/" + birthday.getMonth() + "/" + birthday.getFullYear()
+                formattedbirthday = birthday.getDate() + "/" + bdaymonth + "/" + birthday.getFullYear()
                 birthdayexists = true;
             }else if(!isNaN(birthday.getMonth())){
-                formattedbirthday = birthday.getDay() + "/" + birthday.getMonth()
+                formattedbirthday = birthday.getDate() + "/" + bdaymonth
                 birthdayexists = true;
             }
             if(birthdayexists){
