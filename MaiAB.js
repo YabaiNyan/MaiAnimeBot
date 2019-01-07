@@ -13,7 +13,7 @@ const TOKEN = '<-- Enter Your Bot Token Here! -->'
 const PREFIX = '!'
 
 client.on('ready', () => {
-    console.log('Mai is ready! UwU')
+    console.log('Mai is ready! <3')
 })
 
 client.on('error', console.error)
@@ -78,7 +78,7 @@ function handleMalQuery(query, message, deletemessage, is7up) {
                     return message.channel.send("Mai couldn't find a result that has a score above 7!")
                 }
             }
-            var candidateShow = above7[0]
+            var candidateShow = above7[0] || data[0]
             var name = candidateShow.name
             var url = candidateShow.url
             var year = candidateShow.payload.start_year
