@@ -21,3 +21,6 @@ Installation
 2) Open a console in the MaiAnimeBot-master folder and run ```npm install```
 3) Create a ```.env``` file inside the folder with ```TOKEN=(token)``` inside, replacing (token) your discord bot token.
 4) To start, run ```node MaiAB.js``` or ```npm test```
+
+## Credits
+*[__cthuluhoop123__](https://github.com/cthuluhoop123) for [code cleanup and refactoring](https://github.com/YabaiNyan/MaiAnimeBot/pull/1)
