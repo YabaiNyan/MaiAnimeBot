@@ -42,7 +42,7 @@ client.on('message', async message => {
                 return message.channel.send('Mai-Chan can only delete up to 10 messages at a time you know!')
             }
             if (arguments[0] < 1) {
-                return message.channel.send('Mai-Chan deleted 0 messages! None! (maybe have a number greater than 0 next time?)')
+                return message.channel.send('Mai-Chan deleted 0 messages! None! (maybe have an integer greater than 0 next time?)')
             } else {
                 let deletedMessages = await message.channel.bulkDelete(parseInt(arguments[0]) + 1, true)
                 return message.channel.send(`Mai-Chan deleted ${deletedMessages.size - 1} messages!`)
