@@ -18,6 +18,6 @@ Installation
 =====
 
 1) Clone this repository
-2) Replace ```<-- Enter Your Bot Token Here! -->``` in MaiAB.js with a bot token generated on discord developer website.
-3) Open a console in the MaiAnimeBot-master folder and run ```npm install```
+2) Open a console in the MaiAnimeBot-master folder and run ```npm install```
+3) Create a ```.env``` file inside the folder with ```TOKEN=(token)``` inside, replacing (token) your discord bot token.
 4) To start, run ```node MaiAB.js``` or ```npm test```
