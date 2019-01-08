@@ -29,6 +29,7 @@ client.on('message', async message => {
     if (command == `${PREFIX}mal`) handleMalQuery(arguments.join(" "), message, true, false)
     if (command == `${PREFIX}7up`) handleMalQuery(arguments.join(" "), message, true, true)
     if (command == `${PREFIX}seiyuu`) handleSeiyuuQuery(arguments.join(" "), message, true)
+    if (command == `${PREFIX}manga`) handleMangaQuery(arguments.join(" "), message, true);
     if (command == `${PREFIX}purge`) {
         if (guildowner == messageauthor) {
             if (arguments.length < 1) {
@@ -64,6 +65,16 @@ client.on('message', async message => {
             deletemessage = true
         }
         handleSeiyuuQuery(query, message, deletemessage)
+    }
+
+    var mangamatches = message.content.match(/\{(.+?)\}/)
+    if (mangamatches) {
+        var query = mangamatches[1]
+        var deletemessage = false
+        if (mangamatches[0] == message.content) {
+            deletemessage = true
+        }
+        handleMangaQuery(query, message, deletemessage)
     }
 })
 
@@ -216,9 +227,75 @@ function handleSeiyuuQuery(query, message, deletemessage) {
     })
 }
 
+
+function handleMangaQuery(query, message, deletemessage){
+    Mal.search("manga", query, {limit: 1, Page: 1}).then(j => {
+        var { title, url, image_url: image } = j.results[0]
+        Mal.manga(j.results[0].mal_id).then(data => {
+            image = data.image_url;
+            var genres = processMangaGenres(data.genres)
+            var { rank: ranked, popularity, status } = data
+            var score = data.score.toString()
+            var synopsis = toTweetLength(data.synopsis);
+            message.channel.send({content: url, embed:{
+                title: title,
+                url: url,
+                color: 2817854,
+                footer: {
+                    icon_url: message.author.avatarURL,
+                    text: message.author.username+"#"+message.author.discriminator
+                },
+                image: {
+                    url: image
+                },
+                timestamp: new Date(),
+                fields: [
+                    {
+                        name: "Synopsis",
+                        value: synopsis,
+                    },
+                    {
+                        name: "Genres",
+                        value: genres,
+                    },
+                    {
+                        name: "Score",
+                        value: score,
+                        inline: true
+                    },
+                    {
+                        name: "Ranked",
+                        value: ranked,
+                        inline: true
+                    },
+                    {
+                        name: "Popularity",
+                        value: popularity,
+                        inline: true
+                    },
+                    {
+                        name: "Status",
+                        value: status,
+                        inline: true
+                    }
+                ]
+            }})
+            if (deletemessage) message.delete().catch((err)=>{}); 
+        });
+    });
+}
+
 function toTweetLength(input) {
     if (input.length <= 140) {
         return input
     }
     return input.slice(0, 140) + "..."
+}
+
+function processMangaGenres(input){
+    var genrearr = []
+    for (var element of input){
+        genrearr.push(element.name)
+    }
+    return "`" + genrearr.join("` `") + "`"
 }
