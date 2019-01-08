@@ -166,64 +166,79 @@ function handleMalQuery(query, message, deletemessage, is7up) {
 
 function handleSeiyuuQuery(query, message, deletemessage) {
     Mal.search("person", query, { limit: 1, Page: 1 }).then(j => {
-        var result = j.results[0]
-        var { name, url, image_url: image } = result
-        var embedobj = {
-            title: name,
-            url: url,
-            color: 16728193,
-            footer: {
-                icon_url: message.author.avatarURL,
-                text: message.author.username + "#" + message.author.discriminator
-            },
-            image: {
-                url: image
-            },
-            timestamp: new Date(),
-            fields: []
-        }
+        //console.log(j)
+        var seiyuuarray = []
+        var seiyuuarraylength = j.results.length
+        j.results.forEach(person => {
+            Mal.person(person.mal_id).then(function(j){
+                person.popularity = j.member_favorites
+                seiyuuarray.push(person)
+                handlejump();
+            })
+        });
+        function handlejump(){
+            if(seiyuuarraylength == seiyuuarray.length){
+                seiyuuarray.sort(function(a,b){return b.popularity - a.popularity})
+                var result = seiyuuarray[0]
+                var { name, url, image_url: image } = result
+                var embedobj = {
+                    title: name,
+                    url: url,
+                    color: 16728193,
+                    footer: {
+                        icon_url: message.author.avatarURL,
+                        text: message.author.username + "#" + message.author.discriminator
+                    },
+                    image: {
+                        url: image
+                    },
+                    timestamp: new Date(),
+                    fields: []
+                }
 
-        Mal.person(result.mal_id).then(j => {
-            var birthday = new Date(Date.parse(j.birthday))
-            var formattedbirthday
-            var birthdayexists = false
-            var bdaymonth = birthday.getMonth() + 1
+                Mal.person(result.mal_id).then(j => {
+                    var birthday = new Date(Date.parse(j.birthday))
+                    var formattedbirthday
+                    var birthdayexists = false
+                    var bdaymonth = birthday.getMonth() + 1
 
-            if (birthday.getFullYear()) {
+                    if (birthday.getFullYear()) {
 
-                formattedbirthday = birthday.getDate() + "/" + bdaymonth + "/" + birthday.getFullYear()
-                birthdayexists = true
+                        formattedbirthday = birthday.getDate() + "/" + bdaymonth + "/" + birthday.getFullYear()
+                        birthdayexists = true
 
-            } else if (birthday.getMonth()) {
+                    } else if (birthday.getMonth()) {
 
-                formattedbirthday = birthday.getDate() + "/" + bdaymonth
-                birthdayexists = true
-                
-            }
+                        formattedbirthday = birthday.getDate() + "/" + bdaymonth
+                        birthdayexists = true
+                        
+                    }
 
-            if (birthdayexists) {
-                embedobj.fields.unshift({
-                    name: "Birthday",
-                    value: formattedbirthday,
-                })
-            }
-
-            var about = j.about
-            if (typeof (about) == "string") {
-                about = about.split("\n")
-                for (var element of about) {
-                    var clean = element.replace(/(\r\n|\n|\r|\\n)/gm, "").split(/:(.+)/)
-                    if (clean.length >= 2) {
+                    if (birthdayexists) {
                         embedobj.fields.unshift({
-                            name: clean[0],
-                            value: clean[1]
+                            name: "Birthday",
+                            value: formattedbirthday,
                         })
                     }
-                }
+
+                    var about = j.about
+                    if (typeof (about) == "string") {
+                        about = about.split("\n")
+                        for (var element of about) {
+                            var clean = element.replace(/(\r\n|\n|\r|\\n)/gm, "").split(/:(.+)/)
+                            if (clean.length >= 2) {
+                                embedobj.fields.unshift({
+                                    name: clean[0],
+                                    value: clean[1]
+                                })
+                            }
+                        }
+                    }
+                    message.channel.send({ content: url, embed: embedobj })
+                    if (deletemessage) message.delete().catch((err) => { })
+                })
             }
-            message.channel.send({ content: url, embed: embedobj })
-            if (deletemessage) message.delete().catch((err) => { })
-        })
+        }
     })
 }
 
