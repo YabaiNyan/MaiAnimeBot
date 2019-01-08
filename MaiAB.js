@@ -35,11 +35,17 @@ client.on('message', async message => {
             if (arguments.length < 1) {
                 return message.channel.send('Please tell Mai-Chan how many messages you want to delete! >a<')
             }
+            if (isNaN(arguments[0])) {
+                return message.channel.send('I need numbers!!!')
+            }
             if (arguments[0] > 10) {
                 return message.channel.send('Mai-Chan can only delete up to 10 messages at a time you know!')
+            }
+            if (arguments[0] < 1) {
+                return message.channel.send('Mai-Chan deleted 0 messages! None! (maybe have a number greater than 0 next time?)')
             } else {
-                let deletedMessages = await message.channel.bulkDelete(arguments[0], true)
-                return message.channel.send(`Mai-Chan Deleted ${deletedMessages.size} messages!`)
+                let deletedMessages = await message.channel.bulkDelete(parseInt(arguments[0]) + 1, true)
+                return message.channel.send(`Mai-Chan deleted ${deletedMessages.size - 1} messages!`)
             }
         } else {
             return message.channel.send("Only the Owner of this Guild/Server can use this command")
