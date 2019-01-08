@@ -79,7 +79,7 @@ function handleMalQuery(query, message, deletemessage, is7up) {
                 }
             }
             var candidateShow = above7 ? above7[0] : data[0]
-            var { name, url } = candidateShow.name
+            var { name, url } = candidateShow
             var { start_year: year, score, status } = candidateShow.payload
             malScraper.getInfoFromURL(url)
                 .then(data => {
