@@ -235,6 +235,9 @@ function handleMangaQuery(query, message, deletemessage){
             image = data.image_url;
             var genres = processMangaGenres(data.genres)
             var { rank: ranked, popularity, status } = data
+            if (ranked == null){
+                ranked = "N/A"
+            }
             var score = data.score.toString()
             var synopsis = toTweetLength(data.synopsis);
             message.channel.send({content: url, embed:{
