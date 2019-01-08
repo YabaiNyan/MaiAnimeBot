@@ -14,6 +14,10 @@ const client = new Discord.Client()
 const TOKEN = process.env.TOKEN
 const PREFIX = '!'
 
+const showRegex = /\<(.+?)\>/
+const seiyuuRegex = /\[(.+?)\]/
+const mangaRegex = /\{(.+?)\}/
+
 client.on('ready', () => console.log('Mai is ready! <3'))
 
 client.on('error', console.error)
@@ -29,7 +33,7 @@ client.on('message', async message => {
     if (command == `${PREFIX}mal`) handleMalQuery(arguments.join(" "), message, true, false)
     if (command == `${PREFIX}7up`) handleMalQuery(arguments.join(" "), message, true, true)
     if (command == `${PREFIX}seiyuu`) handleSeiyuuQuery(arguments.join(" "), message, true)
-    if (command == `${PREFIX}manga`) handleMangaQuery(arguments.join(" "), message, true);
+    if (command == `${PREFIX}manga`) handleMangaQuery(arguments.join(" "), message, true)
     if (command == `${PREFIX}purge`) {
         if (guildowner == messageauthor) {
             if (arguments.length < 1) {
@@ -46,34 +50,25 @@ client.on('message', async message => {
         }
     }
 
-    var matches = message.content.match(/\<(.+?)\>/)
+    var matches = message.content.match(showRegex)
     if (matches) {
         var query = matches[1]
-        var deletemessage = false
+        var deletemessage = matches[0] == message.content
         if (query.startsWith("@") || query.startsWith(":") || query.startsWith("#")) return
-        if (matches[0] == message.content) {
-            deletemessage = true
-        }
         handleMalQuery(query, message, deletemessage, false)
     }
 
-    var seiyuumatches = message.content.match(/\[(.+?)\]/)
+    var seiyuumatches = message.content.match(seiyuuRegex)
     if (seiyuumatches) {
         var query = seiyuumatches[1]
-        var deletemessage = false
-        if (seiyuumatches[0] == message.content) {
-            deletemessage = true
-        }
+        var deletemessage = seiyuumatches[0] == message.content
         handleSeiyuuQuery(query, message, deletemessage)
     }
 
-    var mangamatches = message.content.match(/\{(.+?)\}/)
+    var mangamatches = message.content.match(mangaRegex)
     if (mangamatches) {
         var query = mangamatches[1]
-        var deletemessage = false
-        if (mangamatches[0] == message.content) {
-            deletemessage = true
-        }
+        var deletemessage = mangamatches[0] == message.content
         handleMangaQuery(query, message, deletemessage)
     }
 })
@@ -198,7 +193,7 @@ function handleSeiyuuQuery(query, message, deletemessage) {
 
                 formattedbirthday = birthday.getDate() + "/" + bdaymonth
                 birthdayexists = true
-                
+
             }
 
             if (birthdayexists) {
@@ -228,61 +223,63 @@ function handleSeiyuuQuery(query, message, deletemessage) {
 }
 
 
-function handleMangaQuery(query, message, deletemessage){
-    Mal.search("manga", query, {limit: 1, Page: 1}).then(j => {
+function handleMangaQuery(query, message, deletemessage) {
+    Mal.search("manga", query, { limit: 1, Page: 1 }).then(j => {
         var { title, url, image_url: image } = j.results[0]
         Mal.manga(j.results[0].mal_id).then(data => {
-            image = data.image_url;
+            image = data.image_url
             var genres = processMangaGenres(data.genres)
             var { rank: ranked, popularity, status } = data
             var score = data.score.toString()
-            var synopsis = toTweetLength(data.synopsis);
-            message.channel.send({content: url, embed:{
-                title: title,
-                url: url,
-                color: 2817854,
-                footer: {
-                    icon_url: message.author.avatarURL,
-                    text: message.author.username+"#"+message.author.discriminator
-                },
-                image: {
-                    url: image
-                },
-                timestamp: new Date(),
-                fields: [
-                    {
-                        name: "Synopsis",
-                        value: synopsis,
+            var synopsis = toTweetLength(data.synopsis)
+            message.channel.send({
+                content: url, embed: {
+                    title: title,
+                    url: url,
+                    color: 2817854,
+                    footer: {
+                        icon_url: message.author.avatarURL,
+                        text: message.author.username + "#" + message.author.discriminator
                     },
-                    {
-                        name: "Genres",
-                        value: genres,
+                    image: {
+                        url: image
                     },
-                    {
-                        name: "Score",
-                        value: score,
-                        inline: true
-                    },
-                    {
-                        name: "Ranked",
-                        value: ranked,
-                        inline: true
-                    },
-                    {
-                        name: "Popularity",
-                        value: popularity,
-                        inline: true
-                    },
-                    {
-                        name: "Status",
-                        value: status,
-                        inline: true
-                    }
-                ]
-            }})
-            if (deletemessage) message.delete().catch((err)=>{}); 
-        });
-    });
+                    timestamp: new Date(),
+                    fields: [
+                        {
+                            name: "Synopsis",
+                            value: synopsis,
+                        },
+                        {
+                            name: "Genres",
+                            value: genres,
+                        },
+                        {
+                            name: "Score",
+                            value: score,
+                            inline: true
+                        },
+                        {
+                            name: "Ranked",
+                            value: ranked,
+                            inline: true
+                        },
+                        {
+                            name: "Popularity",
+                            value: popularity,
+                            inline: true
+                        },
+                        {
+                            name: "Status",
+                            value: status,
+                            inline: true
+                        }
+                    ]
+                }
+            })
+            if (deletemessage) message.delete().catch((err) => { })
+        })
+    })
 }
 
 function toTweetLength(input) {
@@ -292,10 +289,7 @@ function toTweetLength(input) {
     return input.slice(0, 140) + "..."
 }
 
-function processMangaGenres(input){
-    var genrearr = []
-    for (var element of input){
-        genrearr.push(element.name)
-    }
+function processMangaGenres(input) {
+    var genrearr = input.map(m => m.name)
     return "`" + genrearr.join("` `") + "`"
 }
