@@ -5,6 +5,7 @@ Commands
 =====
 
 * ```!ping```: Pings bot<br>
+* ```!purge (number)```: Purges a number of messages from the chat. Only available to the server owner. Currently set with a maximum of 10 messages to prevent accidental deleting of whole text channel's history.<br>
 * ```!mal (query)```: Searches for ```(query)``` and replys with embed, along with deleting the command. Use this instead of angle bracket method if you need to lookup anything __starting__ with `@`,`#`, or `:`<br>
 * ```!7up (query)```: Same as `!mal`, but only responds with shows with a score of 7 or above<br>
 * ```!manga (query)```: Same as `!mal`, but looks for manga instead<br>
@@ -26,4 +27,4 @@ Installation
 4) To start, run ```node MaiAB.js``` or ```npm test```
 
 ## Credits
-* [__cthuluhoop123__](https://github.com/cthuluhoop123) for [code cleanup and refactoring](https://github.com/YabaiNyan/MaiAnimeBot/pull/1)
+* [__cthuluhoop123__](https://github.com/cthuluhoop123) for [code cleanup and refactoring](https://github.com/YabaiNyan/MaiAnimeBot/pull/1) and [even more cleanup](https://github.com/YabaiNyan/MaiAnimeBot/pull/2)
