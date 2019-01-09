@@ -184,9 +184,9 @@ function handleSeiyuuQuery(query, message, deletemessage) {
             Mal.person(person.mal_id).then(function (j) {
                 person.popularity = j.member_favorites
                 seiyuuarray.push(person)
-                handlejump();
+                handlejump()
             })
-        });
+        })
         function handlejump() {
             if (seiyuuarraylength == seiyuuarray.length) {
                 seiyuuarray.sort(function (a, b) { return b.popularity - a.popularity })
