@@ -12,11 +12,14 @@ const client = new Discord.Client()
 
 // Discord stuffs
 const TOKEN = process.env.TOKEN
+const ADMINID = process.env.ADMINID
 const PREFIX = '!'
 
 const showRegex = /\<(.+?)\>/
 const seiyuuRegex = /\[(.+?)\]/
 const mangaRegex = /\{(.+?)\}/
+
+var verboseReverb = false;
 
 client.on('ready', () => console.log('Mai is ready! <3'))
 
@@ -29,9 +32,21 @@ client.on('message', async message => {
     const guildowner = message.channel.guild.ownerID
     const messageauthor = message.author.id
     arguments.shift()
+    if (verboseReverb) { message.channel.send("VERBOSE: " + "```\n" + escapeMarkdown(message.content) + "\n```") }
     if (command == `${PREFIX}ping`) {
         message.reply('I\'m here!')
         return
+    }
+    if (command == `${PREFIX}whatsmyid`) {
+        message.reply('Your discord author id is ' + messageauthor)
+        return
+    }
+    if (command == `${PREFIX}debug`) {
+        if(ADMINID != undefined) {
+            if(messageauthor == ADMINID){
+                handleDebug(arguments, message)
+            }
+        }
     }
     if (command == `${PREFIX}mal`) { handleMalQuery(arguments.join(" "), message, true, false) }
     if (command == `${PREFIX}7up`) { handleMalQuery(arguments.join(" "), message, true, true) }
@@ -316,6 +331,17 @@ function handleMangaQuery(query, message, deletemessage) {
     })
 }
 
+function handleDebug(arguments, message){
+    if (arguments[0].toLowerCase() == "verbose"){
+        verboseReverb = !verboseReverb
+        if(verboseReverb){
+            message.channel.send("Verbose has been turned on")
+        } else {
+            message.channel.send("Verbose has been turned off")
+        }
+    }
+}
+
 function toTweetLength(input) {
     if (input.length <= 140) {
         return input
@@ -326,4 +352,14 @@ function toTweetLength(input) {
 function processMangaGenres(input) {
     var genrearr = input.map(m => m.name)
     return "`" + genrearr.join("` `") + "`"
+}
+
+function escapeMarkdown(string){
+    var replacements = [
+        [ /\`\`\`/g, '`​`​`​' ]
+    ]
+    return replacements.reduce(
+        function(string, replacement) {
+          return string.replace(replacement[0], replacement[1])
+        }, string)
 }
