@@ -32,7 +32,10 @@ client.on('message', async message => {
     const guildowner = message.channel.guild.ownerID
     const messageauthor = message.author.id
     arguments.shift()
-    if (verboseReverb) { message.channel.send("VERBOSE: " + "```\n" + escapeMarkdown(message.content) + "\n```") }
+    if (verboseReverb) {
+        console.log("VERBOSE: " + message.content)
+        message.channel.send("VERBOSE: " + "```\n" + escapeMarkdown(message.content) + "\n```")
+    }
     if (command == `${PREFIX}ping`) {
         message.reply('I\'m here!')
         return
