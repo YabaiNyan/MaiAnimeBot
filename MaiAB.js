@@ -87,7 +87,7 @@ client.on('message', async message => {
     if (matches) {
         var query = matches[1]
         var deletemessage = matches[0] == message.content
-        if (query.startsWith("@") || query.startsWith(":") || query.startsWith("#")) { return }
+        if (query.startsWith("@") || query.startsWith(":") || query.startsWith("#") || query.startsWith("a:")) { return }
         handleMalQuery(query, message, deletemessage, false)
     }
 
