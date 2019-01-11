@@ -350,6 +350,7 @@ async function handlePurge(arguments, message, guildowner, messageauthor){
             .then(msg => {
                 msg.delete(3000)
             })
+            message.delete().catch((err) => { })
         return
     }
 }
