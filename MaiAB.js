@@ -18,6 +18,7 @@ const PREFIX = '!'
 const showRegex = /\<(.+?)\>/
 const seiyuuRegex = /\[(.+?)\]/
 const mangaRegex = /\{(.+?)\}/
+const channelRegex = /\<\#(.+?)\>/
 
 var verboseReverb = false;
 
@@ -56,6 +57,7 @@ client.on('message', async message => {
     if (command == `${PREFIX}seiyuu`) { handleSeiyuuQuery(arguments.join(" "), message, true) }
     if (command == `${PREFIX}manga`) { handleMangaQuery(arguments.join(" "), message, true) }
     if (command == `${PREFIX}purge`) { handlePurge(arguments, message, guildowner, messageauthor) }
+    if (command == `${PREFIX}movechat`) { handleMoveChat(arguments, message, guildowner, messageauthor) }
 
     var matches = message.content.match(showRegex)
     if (matches) {
@@ -344,6 +346,111 @@ async function handlePurge(arguments, message, guildowner, messageauthor){
                     msg.delete(3000)
                 })
             return
+        }
+    } else {
+        message.channel.send("Only the Owner of this Guild/Server can use this command")
+            .then(msg => {
+                msg.delete(3000)
+            })
+            message.delete().catch((err) => { })
+        return
+    }
+}
+
+async function handleMoveChat(arguments, message, guildowner, messageauthor){
+    if (guildowner == messageauthor) {
+        if (arguments.length < 1) {
+            message.channel.send('Please tell Mai-Chan how many messages you want to move! >a<')
+                .then(msg => {
+                    msg.delete(3000)
+                })
+            return
+        }
+        if (!arguments[0]) {
+            message.channel.send('I need numbers!!!')
+                .then(msg => {
+                    msg.delete(3000)
+                })
+            return
+        }
+        if (arguments[0] > 50) {
+            message.channel.send('Mai-Chan can only move up to 50 messages at a time you know!')
+                .then(msg => {
+                    msg.delete(3000)
+                })
+            return
+        }
+        if (arguments[0] < 1) {
+            message.channel.send('Mai-Chan moved 0 messages! None! (maybe have an integer greater than 0 next time?)')
+                .then(msg => {
+                    msg.delete(3000)
+                })
+            return
+        }
+        if (arguments[1] == undefined) {
+            message.channel.send('I need to know what channel you want me to move the chat to!')
+                .then(msg => {
+                    msg.delete(3000)
+                })
+            return
+        } else {
+            var matches = arguments[1].match(channelRegex)
+            if (matches) {
+                var specifiedchannel = matches[1]
+                if (message.guild.channels.has(specifiedchannel)){
+                    var targetchannel = message.guild.channels.get(specifiedchannel)
+                    message.delete()
+                        .then(()=>{
+                            message.channel.fetchMessages({ limit: arguments[0] })
+                                .then(async messages => {
+                                    var messagearr = [];
+                                    for (var item of messages){
+                                        var itemobj = {
+                                            username: item[1].author.username + "#" + item[1].author.discriminator,
+                                            avatarURL: item[1].author.avatarURL,
+                                            content: item[1].content,
+                                            timestamp: item[1].createdTimestamp
+                                        }
+                                        messagearr.push(itemobj);
+                                    }
+                                    for (var itemobj of messagearr.reverse()){
+                                        targetchannel.send({
+                                            content: "", embed: {
+                                                author: {
+                                                    name: itemobj.username,
+                                                    icon_url: itemobj.avatarURL
+                                                },
+                                                description: itemobj.content,
+                                                color: 14935344,
+                                                timestamp: new Date(itemobj.timestamp),
+                                            }
+                                        })
+                                    }
+                                    let deletedMessages = await message.channel.bulkDelete(parseInt(arguments[0]), true)
+                                    message.channel.send(`Mai-Chan moved ${deletedMessages.size} messages!`)
+                                        .then(msg => {
+                                            msg.delete(3000)
+                                        })
+                                })
+                                .catch(console.error);
+                            }
+                        )
+                        .catch((err) => { })
+                    return
+                }else{
+                    message.channel.send('The channel that you sent does not exist on this server.')
+                        .then(msg => {
+                            msg.delete(3000)
+                        })
+                    return
+                }
+            }else{
+                message.channel.send('The channel that you sent seems to be malformed. Please replace the second argument of the command with #`channel`')
+                    .then(msg => {
+                        msg.delete(3000)
+                    })
+                return
+            }   
         }
     } else {
         message.channel.send("Only the Owner of this Guild/Server can use this command")
