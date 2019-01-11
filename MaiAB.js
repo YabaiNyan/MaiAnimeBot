@@ -55,33 +55,7 @@ client.on('message', async message => {
     if (command == `${PREFIX}7up`) { handleMalQuery(arguments.join(" "), message, true, true) }
     if (command == `${PREFIX}seiyuu`) { handleSeiyuuQuery(arguments.join(" "), message, true) }
     if (command == `${PREFIX}manga`) { handleMangaQuery(arguments.join(" "), message, true) }
-    if (command == `${PREFIX}purge`) {
-        if (guildowner == messageauthor) {
-            if (arguments.length < 1) {
-                message.channel.send('Please tell Mai-Chan how many messages you want to delete! >a<')
-                return
-            }
-            if (!arguments[0]) {
-                message.channel.send('I need numbers!!!')
-                return
-            }
-            if (arguments[0] > 10) {
-                message.channel.send('Mai-Chan can only delete up to 10 messages at a time you know!')
-                return
-            }
-            if (arguments[0] < 1) {
-                message.channel.send('Mai-Chan deleted 0 messages! None! (maybe have an integer greater than 0 next time?)')
-                return
-            } else {
-                let deletedMessages = await message.channel.bulkDelete(parseInt(arguments[0]) + 1, true)
-                message.channel.send(`Mai-Chan deleted ${deletedMessages.size - 1} messages!`)
-                return
-            }
-        } else {
-            message.channel.send("Only the Owner of this Guild/Server can use this command")
-            return
-        }
-    }
+    if (command == `${PREFIX}purge`) { handlePurge(arguments, message, guildowner, messageauthor) }
 
     var matches = message.content.match(showRegex)
     if (matches) {
@@ -332,6 +306,52 @@ function handleMangaQuery(query, message, deletemessage) {
             if (deletemessage) message.delete().catch((err) => { })
         })
     })
+}
+
+async function handlePurge(arguments, message, guildowner, messageauthor){
+    if (guildowner == messageauthor) {
+        if (arguments.length < 1) {
+            message.channel.send('Please tell Mai-Chan how many messages you want to delete! >a<')
+                .then(msg => {
+                    msg.delete(3000)
+                })
+            return
+        }
+        if (!arguments[0]) {
+            message.channel.send('I need numbers!!!')
+                .then(msg => {
+                    msg.delete(3000)
+                })
+            return
+        }
+        if (arguments[0] > 10) {
+            message.channel.send('Mai-Chan can only delete up to 10 messages at a time you know!')
+                .then(msg => {
+                    msg.delete(3000)
+                })
+            return
+        }
+        if (arguments[0] < 1) {
+            message.channel.send('Mai-Chan deleted 0 messages! None! (maybe have an integer greater than 0 next time?)')
+                .then(msg => {
+                    msg.delete(3000)
+                })
+            return
+        } else {
+            let deletedMessages = await message.channel.bulkDelete(parseInt(arguments[0]) + 1, true)
+            message.channel.send(`Mai-Chan deleted ${deletedMessages.size - 1} messages!`)
+                .then(msg => {
+                    msg.delete(3000)
+                })
+            return
+        }
+    } else {
+        message.channel.send("Only the Owner of this Guild/Server can use this command")
+            .then(msg => {
+                msg.delete(3000)
+            })
+        return
+    }
 }
 
 function handleDebug(arguments, message){
