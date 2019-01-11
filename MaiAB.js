@@ -171,7 +171,6 @@ function handleMalQuery(query, message, deletemessage, is7up) {
 
 function handleSeiyuuQuery(query, message, deletemessage) {
     Mal.search("person", query, { limit: 1, Page: 1 }).then(j => {
-        //console.log(j)
         var seiyuuarray = []
         var seiyuuarraylength = j.results.length
         j.results.forEach(person => {
@@ -311,7 +310,7 @@ function handleMangaQuery(query, message, deletemessage) {
 }
 
 async function handlePurge(arguments, message, guildowner, messageauthor){
-    if (guildowner == messageauthor) {
+    if (guildowner == messageauthor || ADMINID == messageauthor) {
         if (arguments.length < 1) {
             message.channel.send('Please tell Mai-Chan how many messages you want to delete! >a<')
                 .then(msg => {
@@ -358,7 +357,7 @@ async function handlePurge(arguments, message, guildowner, messageauthor){
 }
 
 async function handleMoveChat(arguments, message, guildowner, messageauthor){
-    if (guildowner == messageauthor) {
+    if (guildowner == messageauthor || ADMINID == messageauthor) {
         if (arguments.length < 1) {
             message.channel.send('Please tell Mai-Chan how many messages you want to move! >a<')
                 .then(msg => {
@@ -398,6 +397,13 @@ async function handleMoveChat(arguments, message, guildowner, messageauthor){
             if (matches) {
                 var specifiedchannel = matches[1]
                 if (message.guild.channels.has(specifiedchannel)){
+                    if (message.channel.id == specifiedchannel){
+                        message.channel.send('The channel you specified is this channel. Please specify a different channel.')
+                            .then(msg => {
+                                msg.delete(3000)
+                            })
+                        return
+                    }
                     var targetchannel = message.guild.channels.get(specifiedchannel)
                     message.delete()
                         .then(()=>{
@@ -405,25 +411,39 @@ async function handleMoveChat(arguments, message, guildowner, messageauthor){
                                 .then(async messages => {
                                     var messagearr = [];
                                     for (var item of messages){
-                                        var itemobj = {
-                                            username: item[1].author.username + "#" + item[1].author.discriminator,
-                                            avatarURL: item[1].author.avatarURL,
-                                            content: item[1].content,
-                                            timestamp: item[1].createdTimestamp
+                                        if(item[1].embeds.length == 0){
+                                            var itemobj = {
+                                                embed: false,
+                                                username: item[1].author.username + "#" + item[1].author.discriminator,
+                                                avatarURL: item[1].author.avatarURL,
+                                                content: item[1].content,
+                                                timestamp: item[1].createdTimestamp
+                                            }
+                                            messagearr.push(itemobj);
+                                        }else{
+                                            var itemobj = {
+                                                embed: true,
+                                                embedcontent: item[1].embeds[0]
+                                            }
+                                            messagearr.push(itemobj);
                                         }
-                                        messagearr.push(itemobj);
                                     }
                                     for (var itemobj of messagearr.reverse()){
-                                        targetchannel.send({
-                                            content: "", embed: {
+                                        if(!itemobj.embed){
+                                            var embedobj = {
                                                 author: {
                                                     name: itemobj.username,
                                                     icon_url: itemobj.avatarURL
                                                 },
-                                                description: itemobj.content,
+                                                description: itemobj.content + "\n",
                                                 color: 14935344,
                                                 timestamp: new Date(itemobj.timestamp),
                                             }
+                                        }else{
+                                            embedobj = itemobj.embedcontent
+                                        }
+                                        targetchannel.send({
+                                            content: "", embed: embedobj
                                         })
                                     }
                                     let deletedMessages = await message.channel.bulkDelete(parseInt(arguments[0]), true)
