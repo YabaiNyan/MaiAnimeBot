@@ -494,10 +494,10 @@ function handleDebug(arguments, message){
 }
 
 function toTweetLength(input) {
-    if (input.length <= 140) {
+    if (input.length <= 280) {
         return input
     }
-    return input.slice(0, 140) + "..."
+    return input.slice(0, 280) + "..."
 }
 
 function processMangaGenres(input) {
