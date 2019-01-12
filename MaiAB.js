@@ -19,6 +19,7 @@ const showRegex = /\<(.+?)\>/
 const seiyuuRegex = /\[(.+?)\]/
 const mangaRegex = /\{(.+?)\}/
 const channelRegex = /\<\#(.+?)\>/
+const imageLinkRegex = /(https?:\/\/.*\.(?:png|jpg|gif|jpeg))/i
 
 var verboseReverb = false;
 
@@ -418,6 +419,13 @@ async function handleMoveChat(arguments, message, guildowner, messageauthor){
                                                 avatarURL: item[1].author.avatarURL,
                                                 content: item[1].content,
                                                 timestamp: item[1].createdTimestamp
+                                            }
+                                            var imageLinkMatches = message.content.match(imageLinkMatches)
+                                            if (imageLinkMatches) {
+                                                var query = imageLinkMatches[0]
+                                                itemobj.image = {
+                                                    url: query
+                                                }
                                             }
                                             messagearr.push(itemobj);
                                         }else{
