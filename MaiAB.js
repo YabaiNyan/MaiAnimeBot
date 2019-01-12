@@ -457,9 +457,9 @@ async function handleMoveChat(arguments, message, guildowner, messageauthor){
                                         })
                                     }
                                     let deletedMessages = await message.channel.bulkDelete(parseInt(arguments[0]), true)
-                                    message.channel.send(`Mai-Chan moved ${deletedMessages.size} messages!`)
+                                    message.channel.send(`Mai-Chan moved ${deletedMessages.size} messages to <#${specifiedchannel}>!`)
                                         .then(msg => {
-                                            msg.delete(3000)
+                                            msg.delete(5000)
                                         })
                                 })
                                 .catch(console.error);
