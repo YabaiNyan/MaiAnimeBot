@@ -19,7 +19,7 @@ const showRegex = /\<(.+?)\>/
 const seiyuuRegex = /\[(.+?)\]/
 const mangaRegex = /\{(.+?)\}/
 const channelRegex = /\<\#(.+?)\>/
-const imageLinkRegex = /(https?:\/\/.*\.(?:png|jpg|gif|jpeg))/i
+const imageLinkRegex = /(https?:\/\/.*\.(?:png|jpg|gif|jpeg)\??.*)/i
 
 var verboseReverb = false;
 
@@ -412,20 +412,17 @@ async function handleMoveChat(arguments, message, guildowner, messageauthor){
                                 .then(async messages => {
                                     var messagearr = [];
                                     for (var item of messages){
-                                        if(item[1].embeds.length == 0){
+                                        var imageLinkMatches = item[1].content.match(imageLinkRegex)
+                                        if(item[1].embeds.length == 0 || imageLinkMatches){
                                             var itemobj = {
                                                 embed: false,
                                                 username: item[1].author.username + "#" + item[1].author.discriminator,
                                                 avatarURL: item[1].author.avatarURL,
                                                 content: item[1].content,
-                                                timestamp: item[1].createdTimestamp
+                                                timestamp: item[1].createdTimestamp,
                                             }
-                                            var imageLinkMatches = message.content.match(imageLinkMatches)
-                                            if (imageLinkMatches) {
-                                                var query = imageLinkMatches[0]
-                                                itemobj.image = {
-                                                    url: query
-                                                }
+                                            if(imageLinkMatches){
+                                                itemobj.image = imageLinkMatches[0].split(" ")[0]
                                             }
                                             messagearr.push(itemobj);
                                         }else{
@@ -443,9 +440,14 @@ async function handleMoveChat(arguments, message, guildowner, messageauthor){
                                                     name: itemobj.username,
                                                     icon_url: itemobj.avatarURL
                                                 },
-                                                description: itemobj.content + "\n",
+                                                description: itemobj.content,
                                                 color: 14935344,
                                                 timestamp: new Date(itemobj.timestamp),
+                                            }
+                                            if (itemobj.image) {
+                                                embedobj.image = {
+                                                    url: itemobj.image
+                                                }
                                             }
                                         }else{
                                             embedobj = itemobj.embedcontent
