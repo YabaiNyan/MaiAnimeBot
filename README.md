@@ -27,7 +27,7 @@ For auto command deletion, make sure that the bot is Authorised to Manage Messag
 Installation
 =====
 1) Clone this repository
-2) Open a console in the MaiAnimeBot-master folder and run ```npm install```
+2) Open a console in the MaiAnimeBot folder and run ```npm install```
 3) Create a ```.env``` file inside the folder with ```TOKEN=(token)``` inside, replacing (token) your discord bot token.
 4) To start, run ```node MaiAB.js``` or ```npm test```
 
