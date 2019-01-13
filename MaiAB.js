@@ -34,31 +34,66 @@ client.on('message', async message => {
     const guildowner = message.channel.guild.ownerID
     const messageauthor = message.author.id
     arguments.shift()
+
     if (verboseReverb) {
         console.log("VERBOSE: " + message.content)
         message.channel.send("VERBOSE: " + "```\n" + escapeMarkdown(message.content) + "\n```")
     }
-    if (command == `${PREFIX}ping`) {
-        message.reply('I\'m here!')
-        return
-    }
-    if (command == `${PREFIX}whatsmyid`) {
-        message.reply('Your discord author id is ' + messageauthor)
-        return
-    }
-    if (command == `${PREFIX}debug`) {
-        if(ADMINID != undefined) {
-            if(messageauthor == ADMINID){
-                handleDebug(arguments, message)
+
+    switch (command){
+
+        case `${PREFIX}ping`:
+            message.reply('I\'m here!')
+            return
+
+        case `${PREFIX}whatsmyid`:
+            message.reply('Your discord author id is ' + messageauthor)
+            return
+
+        case `${PREFIX}debug`:
+            if(ADMINID != undefined) {
+                if(messageauthor == ADMINID){
+                    handleDebug(arguments, message)
+                }
             }
-        }
+            return
+
+        case `${PREFIX}mal`:
+            handleMalQuery(arguments.join(" "), message, true, false)
+            return
+            
+        case `${PREFIX}7up`:
+            handleMalQuery(arguments.join(" "), message, true, true)
+            return
+
+        case `${PREFIX}seiyuu`:
+            handleSeiyuuQuery(arguments.join(" "), message, true)
+            return
+
+        case `${PREFIX}manga`:
+            handleMangaQuery(arguments.join(" "), message, true)
+            return
+
+        case `${PREFIX}purge`:
+            handlePurge(arguments, message, guildowner, messageauthor)
+            return
+
+        case `${PREFIX}movechat`:
+            handleMoveChat(arguments, message, guildowner, messageauthor)
+            return
+
+        case `${PREFIX}delete`:
+            handleDeleteMessage(arguments, message, guildowner, messageauthor)
+            return
+
+        case `${PREFIX}pin`:
+            handlePinMessage(arguments, message, guildowner, messageauthor, true)
+            return
+
+        case `${PREFIX}unpin`:
+            handlePinMessage(arguments, message, guildowner, messageauthor, false)
+            return
     }
-    if (command == `${PREFIX}mal`) { handleMalQuery(arguments.join(" "), message, true, false) }
-    if (command == `${PREFIX}7up`) { handleMalQuery(arguments.join(" "), message, true, true) }
-    if (command == `${PREFIX}seiyuu`) { handleSeiyuuQuery(arguments.join(" "), message, true) }
-    if (command == `${PREFIX}manga`) { handleMangaQuery(arguments.join(" "), message, true) }
-    if (command == `${PREFIX}purge`) { handlePurge(arguments, message, guildowner, messageauthor) }
-    if (command == `${PREFIX}movechat`) { handleMoveChat(arguments, message, guildowner, messageauthor) }
 
     var matches = message.content.match(showRegex)
     if (matches) {
@@ -313,46 +348,27 @@ function handleMangaQuery(query, message, deletemessage) {
 async function handlePurge(arguments, message, guildowner, messageauthor){
     if (guildowner == messageauthor || ADMINID == messageauthor) {
         if (arguments.length < 1) {
-            message.channel.send('Please tell Mai-Chan how many messages you want to delete! >a<')
-                .then(msg => {
-                    msg.delete(3000)
-                })
+            temporaryMessage('Please tell Mai-Chan how many messages you want to delete! >a<', message)
             return
         }
         if (!arguments[0]) {
-            message.channel.send('I need numbers!!!')
-                .then(msg => {
-                    msg.delete(3000)
-                })
+            temporaryMessage('I need numbers!!!', message)
             return
         }
         if (arguments[0] > 10) {
-            message.channel.send('Mai-Chan can only delete up to 10 messages at a time you know!')
-                .then(msg => {
-                    msg.delete(3000)
-                })
+            temporaryMessage('Mai-Chan can only delete up to 10 messages at a time you know!', message)
             return
         }
         if (arguments[0] < 1) {
-            message.channel.send('Mai-Chan deleted 0 messages! None! (maybe have an integer greater than 0 next time?)')
-                .then(msg => {
-                    msg.delete(3000)
-                })
+            temporaryMessage('Mai-Chan deleted 0 messages! None! (maybe have an integer greater than 0 next time?)', message)
             return
         } else {
             let deletedMessages = await message.channel.bulkDelete(parseInt(arguments[0]) + 1, true)
-            message.channel.send(`Mai-Chan deleted ${deletedMessages.size - 1} messages!`)
-                .then(msg => {
-                    msg.delete(3000)
-                })
+            temporaryMessage(`Mai-Chan deleted ${deletedMessages.size - 1} messages!`, message)
             return
         }
     } else {
-        message.channel.send("Only the Owner of this Guild/Server can use this command")
-            .then(msg => {
-                msg.delete(3000)
-            })
-            message.delete().catch((err) => { })
+        temporaryMessage("Only the Owner of this Guild/Server can use this command", message)
         return
     }
 }
@@ -360,38 +376,23 @@ async function handlePurge(arguments, message, guildowner, messageauthor){
 async function handleMoveChat(arguments, message, guildowner, messageauthor){
     if (guildowner == messageauthor || ADMINID == messageauthor) {
         if (arguments.length < 1) {
-            message.channel.send('Please tell Mai-Chan how many messages you want to move! >a<')
-                .then(msg => {
-                    msg.delete(3000)
-                })
+            temporaryMessage('Please tell Mai-Chan how many messages you want to move! >a<', message)
             return
         }
         if (!arguments[0]) {
-            message.channel.send('I need numbers!!!')
-                .then(msg => {
-                    msg.delete(3000)
-                })
+            temporaryMessage('I need numbers!!!', message)
             return
         }
         if (arguments[0] > 50) {
-            message.channel.send('Mai-Chan can only move up to 50 messages at a time you know!')
-                .then(msg => {
-                    msg.delete(3000)
-                })
+            temporaryMessage('Mai-Chan can only move up to 50 messages at a time you know!', message)
             return
         }
         if (arguments[0] < 1) {
-            message.channel.send('Mai-Chan moved 0 messages! None! (maybe have an integer greater than 0 next time?)')
-                .then(msg => {
-                    msg.delete(3000)
-                })
+            temporaryMessage('Mai-Chan moved 0 messages! None! (maybe have an integer greater than 0 next time?)', message)
             return
         }
         if (arguments[1] == undefined) {
-            message.channel.send('I need to know what channel you want me to move the chat to!')
-                .then(msg => {
-                    msg.delete(3000)
-                })
+            temporaryMessage('I need to know what channel you want me to move the chat to!', message)
             return
         } else {
             var matches = arguments[1].match(channelRegex)
@@ -399,10 +400,7 @@ async function handleMoveChat(arguments, message, guildowner, messageauthor){
                 var specifiedchannel = matches[1]
                 if (message.guild.channels.has(specifiedchannel)){
                     if (message.channel.id == specifiedchannel){
-                        message.channel.send('The channel you specified is this channel. Please specify a different channel.')
-                            .then(msg => {
-                                msg.delete(3000)
-                            })
+                        temporaryMessage('The channel you specified is this channel. Please specify a different channel.', message)
                         return
                     }
                     var targetchannel = message.guild.channels.get(specifiedchannel)
@@ -468,27 +466,59 @@ async function handleMoveChat(arguments, message, guildowner, messageauthor){
                         .catch((err) => { })
                     return
                 }else{
-                    message.channel.send('The channel that you sent does not exist on this server.')
-                        .then(msg => {
-                            msg.delete(3000)
-                        })
+                    temporaryMessage('The channel that you sent does not exist on this server.', message)
                     return
                 }
             }else{
-                message.channel.send('The channel that you sent seems to be malformed. Please replace the second argument of the command with #`channel`')
-                    .then(msg => {
-                        msg.delete(3000)
-                    })
+                temporaryMessage('The channel that you sent seems to be malformed. Please replace the second argument of the command with #`channel`', message)
                 return
             }   
         }
     } else {
-        message.channel.send("Only the Owner of this Guild/Server can use this command")
-            .then(msg => {
-                msg.delete(3000)
-            })
-            message.delete().catch((err) => { })
+        temporaryMessage("Only the Owner of this Guild/Server can use this command", message)
         return
+    }
+}
+
+function handleDeleteMessage(arguments, message, guildowner, messageauthor) {
+    if (guildowner == messageauthor || ADMINID == messageauthor) {
+        message.channel.fetchMessage(arguments[0])
+            .then((msg) => {
+                msg.delete()
+                temporaryMessage("Message has been deleted", message)
+            })
+            .catch(() => {
+                temporaryMessage("That message doesnt seem to exist in this channel. Try again I guess?", message)
+            });
+    }
+}
+
+function handlePinMessage(arguments, message, guildowner, messageauthor, pin) {
+    if (guildowner == messageauthor || ADMINID == messageauthor) {
+        message.channel.fetchMessage(arguments[0])
+            .then((msg) => {
+                if(pin){
+                    msg.pin()
+                        .then(() => {
+                            temporaryMessage("Message has been pinned", message)
+                        })
+                        .catch(() => {
+                            temporaryMessage("I cant seem to pin that message type", message)
+                        })
+                }else{
+                    msg.unpin()
+                        .then(() => {
+                            temporaryMessage("Message has been unpinned", message)
+                        })
+                        .catch(() => {
+                            temporaryMessage("I cant seem to unpin that message type", message)
+                        })
+                    
+                }
+            })
+            .catch(() => {
+                temporaryMessage("That message doesnt seem to be in this channel. Try again I guess?", message)
+            });
     }
 }
 
@@ -496,9 +526,9 @@ function handleDebug(arguments, message){
     if (arguments[0].toLowerCase() == "verbose"){
         verboseReverb = !verboseReverb
         if(verboseReverb){
-            message.channel.send("Verbose has been turned on")
+            temporaryMessage("Verbose has been turned on", message)
         } else {
-            message.channel.send("Verbose has been turned off")
+            temporaryMessage("Verbose has been turned off", message)
         }
     }
 }
@@ -523,4 +553,12 @@ function escapeMarkdown(string){
         function(string, replacement) {
           return string.replace(replacement[0], replacement[1])
         }, string)
+}
+
+function temporaryMessage(sendstr, message) {
+    message.channel.send(sendstr)
+        .then(msg => {
+            msg.delete(3000)
+        })
+    message.delete().catch((err) => { })
 }
