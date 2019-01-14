@@ -21,7 +21,7 @@ const mangaRegex = /\{(.+?)\}/
 const channelRegex = /\<\#(.+?)\>/
 const imageLinkRegex = /(https?:\/\/.*\.(?:png|jpg|gif|jpeg)\??.*)/i
 
-var verboseReverb = false;
+var verboseReverb = false
 
 client.on('ready', () => console.log('Mai is ready! <3'))
 
@@ -40,7 +40,7 @@ client.on('message', async message => {
         message.channel.send("VERBOSE: " + "```\n" + escapeMarkdown(message.content) + "\n```")
     }
 
-    switch (command){
+    switch (command) {
 
         case `${PREFIX}ping`:
             message.reply('I\'m here!')
@@ -51,8 +51,8 @@ client.on('message', async message => {
             return
 
         case `${PREFIX}debug`:
-            if(ADMINID != undefined) {
-                if(messageauthor == ADMINID){
+            if (ADMINID != undefined) {
+                if (messageauthor == ADMINID) {
                     handleDebug(arguments, message)
                 }
             }
@@ -61,7 +61,7 @@ client.on('message', async message => {
         case `${PREFIX}mal`:
             handleMalQuery(arguments.join(" "), message, true, false)
             return
-            
+
         case `${PREFIX}7up`:
             handleMalQuery(arguments.join(" "), message, true, true)
             return
@@ -216,6 +216,7 @@ function handleSeiyuuQuery(query, message, deletemessage) {
                 handlejump()
             })
         })
+
         function handlejump() {
             if (seiyuuarraylength == seiyuuarray.length) {
                 seiyuuarray.sort(function (a, b) { return b.popularity - a.popularity })
@@ -345,13 +346,13 @@ function handleMangaQuery(query, message, deletemessage) {
     })
 }
 
-async function handlePurge(arguments, message, guildowner, messageauthor){
+async function handlePurge(arguments, message, guildowner, messageauthor) {
     if (guildowner == messageauthor || ADMINID == messageauthor) {
         if (arguments.length < 1) {
             temporaryMessage('Please tell Mai-Chan how many messages you want to delete! >a<', message)
             return
         }
-        if (!arguments[0]) {
+        if (!parseInt(arguments[0])) {
             temporaryMessage('I need numbers!!!', message)
             return
         }
@@ -373,7 +374,7 @@ async function handlePurge(arguments, message, guildowner, messageauthor){
     }
 }
 
-async function handleMoveChat(arguments, message, guildowner, messageauthor){
+async function handleMoveChat(arguments, message, guildowner, messageauthor) {
     if (guildowner == messageauthor || ADMINID == messageauthor) {
         if (arguments.length < 1) {
             temporaryMessage('Please tell Mai-Chan how many messages you want to move! >a<', message)
@@ -398,20 +399,20 @@ async function handleMoveChat(arguments, message, guildowner, messageauthor){
             var matches = arguments[1].match(channelRegex)
             if (matches) {
                 var specifiedchannel = matches[1]
-                if (message.guild.channels.has(specifiedchannel)){
-                    if (message.channel.id == specifiedchannel){
+                if (message.guild.channels.has(specifiedchannel)) {
+                    if (message.channel.id == specifiedchannel) {
                         temporaryMessage('The channel you specified is this channel. Please specify a different channel.', message)
                         return
                     }
                     var targetchannel = message.guild.channels.get(specifiedchannel)
                     message.delete()
-                        .then(()=>{
+                        .then(() => {
                             message.channel.fetchMessages({ limit: arguments[0] })
                                 .then(async messages => {
-                                    var messagearr = [];
-                                    for (var item of messages){
+                                    var messagearr = []
+                                    for (var item of messages) {
                                         var imageLinkMatches = item[1].content.match(imageLinkRegex)
-                                        if(item[1].embeds.length == 0 || imageLinkMatches){
+                                        if (item[1].embeds.length == 0 || imageLinkMatches) {
                                             var itemobj = {
                                                 embed: false,
                                                 username: item[1].author.username + "#" + item[1].author.discriminator,
@@ -419,20 +420,20 @@ async function handleMoveChat(arguments, message, guildowner, messageauthor){
                                                 content: item[1].content,
                                                 timestamp: item[1].createdTimestamp,
                                             }
-                                            if(imageLinkMatches){
+                                            if (imageLinkMatches) {
                                                 itemobj.image = imageLinkMatches[0].split(" ")[0]
                                             }
-                                            messagearr.push(itemobj);
-                                        }else{
+                                            messagearr.push(itemobj)
+                                        } else {
                                             var itemobj = {
                                                 embed: true,
                                                 embedcontent: item[1].embeds[0]
                                             }
-                                            messagearr.push(itemobj);
+                                            messagearr.push(itemobj)
                                         }
                                     }
-                                    for (var itemobj of messagearr.reverse()){
-                                        if(!itemobj.embed){
+                                    for (var itemobj of messagearr.reverse()) {
+                                        if (!itemobj.embed) {
                                             var embedobj = {
                                                 author: {
                                                     name: itemobj.username,
@@ -447,7 +448,7 @@ async function handleMoveChat(arguments, message, guildowner, messageauthor){
                                                     url: itemobj.image
                                                 }
                                             }
-                                        }else{
+                                        } else {
                                             embedobj = itemobj.embedcontent
                                         }
                                         targetchannel.send({
@@ -460,23 +461,19 @@ async function handleMoveChat(arguments, message, guildowner, messageauthor){
                                             msg.delete(5000)
                                         })
                                 })
-                                .catch(console.error);
-                            }
+                                .catch(console.error)
+                        }
                         )
                         .catch((err) => { })
-                    return
-                }else{
+                } else {
                     temporaryMessage('The channel that you sent does not exist on this server.', message)
-                    return
                 }
-            }else{
+            } else {
                 temporaryMessage('The channel that you sent seems to be malformed. Please replace the second argument of the command with #`channel`', message)
-                return
-            }   
+            }
         }
     } else {
         temporaryMessage("Only the Owner of this Guild/Server can use this command", message)
-        return
     }
 }
 
@@ -489,7 +486,7 @@ function handleDeleteMessage(arguments, message, guildowner, messageauthor) {
             })
             .catch(() => {
                 temporaryMessage("That message doesnt seem to exist in this channel. Try again I guess?", message)
-            });
+            })
     }
 }
 
@@ -497,7 +494,7 @@ function handlePinMessage(arguments, message, guildowner, messageauthor, pin) {
     if (guildowner == messageauthor || ADMINID == messageauthor) {
         message.channel.fetchMessage(arguments[0])
             .then((msg) => {
-                if(pin){
+                if (pin) {
                     msg.pin()
                         .then(() => {
                             temporaryMessage("Message has been pinned", message)
@@ -505,7 +502,7 @@ function handlePinMessage(arguments, message, guildowner, messageauthor, pin) {
                         .catch(() => {
                             temporaryMessage("I cant seem to pin that message type", message)
                         })
-                }else{
+                } else {
                     msg.unpin()
                         .then(() => {
                             temporaryMessage("Message has been unpinned", message)
@@ -513,19 +510,19 @@ function handlePinMessage(arguments, message, guildowner, messageauthor, pin) {
                         .catch(() => {
                             temporaryMessage("I cant seem to unpin that message type", message)
                         })
-                    
+
                 }
             })
             .catch(() => {
                 temporaryMessage("That message doesnt seem to be in this channel. Try again I guess?", message)
-            });
+            })
     }
 }
 
-function handleDebug(arguments, message){
-    if (arguments[0].toLowerCase() == "verbose"){
+function handleDebug(arguments, message) {
+    if (arguments[0].toLowerCase() == "verbose") {
         verboseReverb = !verboseReverb
-        if(verboseReverb){
+        if (verboseReverb) {
             temporaryMessage("Verbose has been turned on", message)
         } else {
             temporaryMessage("Verbose has been turned off", message)
@@ -545,13 +542,13 @@ function processMangaGenres(input) {
     return "`" + genrearr.join("` `") + "`"
 }
 
-function escapeMarkdown(string){
+function escapeMarkdown(string) {
     var replacements = [
-        [ /\`\`\`/g, '`​`​`​' ]
+        [/\`\`\`/g, '`​`​`​']
     ]
     return replacements.reduce(
-        function(string, replacement) {
-          return string.replace(replacement[0], replacement[1])
+        function (string, replacement) {
+            return string.replace(replacement[0], replacement[1])
         }, string)
 }
 
