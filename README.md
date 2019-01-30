@@ -16,7 +16,7 @@ MyAnimeList Search Commands
 * ```!7up (query)```: Same as `!mal`, but only responds with shows with a score of 7 or above<br>
 * ```!manga (query)```: Same as `!mal`, but looks for manga instead<br>
 * ```!seiyuu (query)```: Same as `!mal`, but looks for voice actors instead<br>
-* ```<query>```: Querys text that is between angled brackets (<>). Will work within a message or standalone. command will not be deleted if it is within a message, but will be if it is standalone.<br>
+* ```<query>```: Querys text that is between angled brackets (<>). Will work within a message or standalone. Command will not be deleted if it is within a message, but will be if it is standalone.<br>
 * ```{query}```: same as `<query>`, but looks for manga instead<br>
 * ```[query]```: same as `<query>`, but looks for voice actors instead
 
@@ -26,9 +26,8 @@ For auto command deletion, make sure that the bot is Authorised to Manage Messag
 
 Installation
 =====
-
 1) Clone this repository
-2) Open a console in the MaiAnimeBot-master folder and run ```npm install```
+2) Open a console in the MaiAnimeBot folder and run ```npm install```
 3) Create a ```.env``` file inside the folder with ```TOKEN=(token)``` inside, replacing (token) your discord bot token.
 4) To start, run ```node MaiAB.js``` or ```npm test```
 
