@@ -17,6 +17,7 @@ const client = new Discord.Client()
 const TOKEN = process.env.TOKEN
 const ADMINID = process.env.ADMINID
 const NHENTAIENABLE = process.env.NHENTAIENABLE
+const NHCHANNEL = process.env.NHCHANNEL
 const PREFIX = '!'
 
 const showRegex = /\<(.+?)\>/
@@ -254,26 +255,35 @@ function handleMalQuery(query, message, deletemessage, is7up) {
 }
 
 function handlenhentai(query, message){
-    nhentai.exists(query).then((exists)=>{
-        if(exists){
-            nhentai.getTags(query).then((arr)=>{
-                var jointagArr = []
-                var loliexist = false
-                for (var i in arr){
-                    jointagArr.push(arr[i].tag + " " + arr[i].count)
-                    if(arr[i].tag == 'lolicon'){
-                        loliexist = true;
-                    }
-                }
-                message.channel.send('`'+jointagArr.join("` `")+'`')
-                if(loliexist){
-                    message.channel.send('>>' + query + '\n>>Tags: lolicon\n' + 'FBI OPEN UP!')
-                }
-            })
-        }else{
-            message.channel.send('This book does not exist!')
+    if(NHCHANNEL != undefined){
+        if(NHCHANNEL == message.channel.id){
+            nhquery(query, message)
         }
-    })
+    }else{
+        nhquery(query, message)
+    }
+    function nhquery(){
+        nhentai.exists(query).then((exists)=>{
+            if(exists){
+                nhentai.getTags(query).then((arr)=>{
+                    var jointagArr = []
+                    var loliexist = false
+                    for (var i in arr){
+                        jointagArr.push(arr[i].tag + " " + arr[i].count)
+                        if(arr[i].tag == 'lolicon'){
+                            loliexist = true;
+                        }
+                    }
+                    message.channel.send('`'+jointagArr.join("` `")+'`')
+                    if(loliexist){
+                        message.channel.send('>>' + query + '\n>>Tags: lolicon\n' + 'FBI OPEN UP!')
+                    }
+                })
+            }else{
+                message.channel.send('This book does not exist!')
+            }
+        })
+    }
 }
 
 function handleSeiyuuQuery(query, message, deletemessage) {
