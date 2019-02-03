@@ -109,10 +109,10 @@ client.on('message', async message => {
             }else{
                 switch(query.length){
                     case 6:
-                        handlenhentai(query, message, true)
+                        handlenhentai(query, message)
                         break
                     case 5:
-                        handlenhentai(query, message, true)
+                        handlenhentai(query, message)
                         break
                     default:
                         temporaryMessage('I need five or six digits if you want me to look it up for you!', message)
@@ -149,7 +149,7 @@ client.on('message', async message => {
         var nhentaimatches = message.content.match(nhentaiNumbersRegex)
         if (nhentaimatches) {
             var query = nhentaimatches
-            handlenhentai(query[0], message, false)
+            handlenhentai(query[0], message)
         }
     }
 })
@@ -253,7 +253,7 @@ function handleMalQuery(query, message, deletemessage, is7up) {
         .catch((err) => console.error(err))
 }
 
-function handlenhentai(query, message, deletemessage){
+function handlenhentai(query, message){
     nhentai.exists(query).then((exists)=>{
         if(exists){
             nhentai.getTags(query).then((arr)=>{
@@ -268,9 +268,6 @@ function handlenhentai(query, message, deletemessage){
                 message.channel.send('`'+jointagArr.join("` `")+'`')
                 if(loliexist){
                     message.channel.send('>>' + query + '\n>>Tags: lolicon\n' + 'FBI OPEN UP!')
-                }
-                if(deletemessage){
-                    message.delete()
                 }
             })
         }else{
