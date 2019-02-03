@@ -33,11 +33,8 @@ class nHentai {
                 .head('https://nhentai.net/g/' + id)
                 .then(res => resolve(true))
                 .catch(err => {
-                    if (err.status === 404) {
-                        resolve(false)
-                        return
-                    }
-                    resolve(true)
+                    resolve(false)
+                    return
                 })
         })
     }
