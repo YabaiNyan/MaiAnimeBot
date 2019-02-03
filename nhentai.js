@@ -30,7 +30,7 @@ class nHentai {
     static exists(id) {
         return new Promise((resolve, reject) => {
             request
-                .head('https://nhentai.net/g/' + id)
+                .head('https://nhentai.net/g/' + id + '/')
                 .then(res => resolve(true))
                 .catch(err => {
                     resolve(false)
