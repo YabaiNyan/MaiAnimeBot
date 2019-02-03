@@ -6,6 +6,9 @@ const malScraper = require('mal-scraper')
 // Other MAL api for scraping Seiyuus
 const Mal = require("node-myanimelist")
 
+// nhentai api for checking 6 digit numbers
+const nhentai = require("./nhentai.js")
+
 // Req Discord api
 const Discord = require('discord.js')
 const client = new Discord.Client()
@@ -13,6 +16,7 @@ const client = new Discord.Client()
 // Discord stuffs
 const TOKEN = process.env.TOKEN
 const ADMINID = process.env.ADMINID
+const NHENTAIENABLE = process.env.NHENTAIENABLE
 const PREFIX = '!'
 
 const showRegex = /\<(.+?)\>/
@@ -20,6 +24,7 @@ const seiyuuRegex = /\[(.+?)\]/
 const mangaRegex = /\{(.+?)\}/
 const channelRegex = /\<\#(.+?)\>/
 const imageLinkRegex = /(https?:\/\/.*\.(?:png|jpg|gif|jpeg)\??.*)/i
+const nhentaiNumbersRegex = /\b([0-9]){5,6}\b/
 
 var verboseReverb = false;
 
@@ -95,6 +100,25 @@ client.on('message', async message => {
         case `${PREFIX}unpin`:
             handlePinMessage(arguments, message, guildowner, messageauthor, false)
             return
+        
+        case `${PREFIX}nh`:
+            var query = arguments.join(" ")
+            if(query.length < 0){
+                temporaryMessage('Please give me somthing to search', message)
+                return
+            }else{
+                switch(query.length){
+                    case 6:
+                        handlenhentai(query, message, true)
+                        break
+                    case 5:
+                        handlenhentai(query, message, true)
+                        break
+                    default:
+                        temporaryMessage('I need five or six digits if you want me to look it up for you!', message)
+                }
+            }
+            return
     }
 
     var matches = message.content.match(showRegex)
@@ -119,6 +143,14 @@ client.on('message', async message => {
         var query = mangamatches[1]
         var deletemessage = mangamatches[0] == message.content
         handleMangaQuery(query, message, deletemessage)
+    }
+
+    if(NHENTAIENABLE != undefined){
+        var nhentaimatches = message.content.match(nhentaiNumbersRegex)
+        if (nhentaimatches) {
+            var query = nhentaimatches
+            handlenhentai(query[0], message, false)
+        }
     }
 })
 
@@ -219,6 +251,32 @@ function handleMalQuery(query, message, deletemessage, is7up) {
                 .catch((err) => console.error(err))
         })
         .catch((err) => console.error(err))
+}
+
+function handlenhentai(query, message, deletemessage){
+    nhentai.exists(query).then((exists)=>{
+        if(exists){
+            nhentai.getTags(query).then((arr)=>{
+                var jointagArr = []
+                var loliexist = false
+                for (var i in arr){
+                    jointagArr.push(arr[i].tag + " " + arr[i].count)
+                    if(arr[i].tag == 'lolicon'){
+                        loliexist = true;
+                    }
+                }
+                message.channel.send('`'+jointagArr.join("` `")+'`')
+                if(loliexist){
+                    message.channel.send('>>' + query + '\n>>Tags: lolicon\n' + 'FBI OPEN UP!')
+                }
+                if(deletemessage){
+                    message.delete()
+                }
+            })
+        }else{
+            message.channel.send('This book does not exist!')
+        }
+    })
 }
 
 function handleSeiyuuQuery(query, message, deletemessage) {
