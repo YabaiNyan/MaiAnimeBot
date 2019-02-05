@@ -101,14 +101,14 @@ client.on('message', async message => {
         case `${PREFIX}unpin`:
             handlePinMessage(arguments, message, guildowner, messageauthor, false)
             return
-        
+
         case `${PREFIX}nh`:
             var query = arguments.join(" ")
-            if(query.length < 0){
+            if (query.length < 0) {
                 temporaryMessage('Please give me somthing to search', message)
                 return
-            }else{
-                switch(query.length){
+            } else {
+                switch (query.length) {
                     case 6:
                         handlenhentai(query, message)
                         break
@@ -146,7 +146,7 @@ client.on('message', async message => {
         handleMangaQuery(query, message, deletemessage)
     }
 
-    if(NHENTAIENABLE != undefined){
+    if (NHENTAIENABLE != undefined) {
         var nhentaimatches = message.content.match(nhentaiNumbersRegex)
         if (nhentaimatches) {
             var query = nhentaimatches
@@ -254,32 +254,33 @@ function handleMalQuery(query, message, deletemessage, is7up) {
         .catch((err) => console.error(err))
 }
 
-function handlenhentai(query, message){
-    if(NHCHANNEL != undefined){
-        if(NHCHANNEL == message.channel.id){
+function handlenhentai(query, message) {
+    if (NHCHANNEL != undefined) {
+        if (NHCHANNEL == message.channel.id) {
             nhquery(query, message)
         }
-    }else{
+    } else {
         nhquery(query, message)
     }
-    function nhquery(){
-        nhentai.exists(query).then((exists)=>{
-            if(exists){
-                nhentai.getTags(query).then((arr)=>{
+
+    function nhquery() {
+        nhentai.exists(query).then((exists) => {
+            if (exists) {
+                nhentai.getTags(query).then((arr) => {
                     var jointagArr = []
                     var loliexist = false
-                    for (var i in arr){
+                    for (var i in arr) {
                         jointagArr.push(arr[i].tag + " " + arr[i].count)
-                        if(arr[i].tag == 'lolicon'){
+                        if (arr[i].tag == 'lolicon') {
                             loliexist = true;
                         }
                     }
-                    message.channel.send('`'+jointagArr.join("` `")+'`')
-                    if(loliexist){
+                    message.channel.send('`' + jointagArr.join("` `") + '`')
+                    if (loliexist) {
                         message.channel.send('>>' + query + '\n>>Tags: lolicon\n' + 'FBI OPEN UP!')
                     }
                 })
-            }else{
+            } else {
                 message.channel.send('This book does not exist!')
             }
         })
