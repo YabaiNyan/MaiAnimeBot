@@ -100,16 +100,7 @@ client.on('message', async message => {
                 mai.temporaryMessage('Please give me somthing to search', message)
                 return
             } else {
-                switch (query.length) {
-                    case 6:
-                        mai.handlenhentai(query, message, NHCHANNEL)
-                        break
-                    case 5:
-                        mai.handlenhentai(query, message, NHCHANNEL)
-                        break
-                    default:
-                        mai.temporaryMessage('I need five or six digits if you want me to look it up for you!', message)
-                }
+                mai.handlenhentai(query, message, NHCHANNEL)
             }
             return
     }
