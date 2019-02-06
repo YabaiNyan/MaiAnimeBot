@@ -4,11 +4,7 @@ MyAnimeList link finding Discord Bot
 General Commands
 =====
 * ```!ping```: Pings bot<br>
-* ```!purge (number)```: Purges a number of messages from the chat. Only available to the server owner. Currently set with a maximum of 10 messages to prevent accidental deleting of whole text channel's history.<br>
-* ```!movechat (number) #(channel)```: Much like purge, but will also send all the deleted messages to another channel. The maximum amount for messages is 50. Note that any attachments will disappear, and attachment links wont work anymore, as discord doesnt allow attachments to be accessable after the message is deleted.<br>
-* ```!delete (message id)```: Deletes a message<br>
-* ```!pin (message id)```: Pins a message<br>
-* ```!unpin (message id)```: Unpins a message<br>
+* ```!whatsmyid```: Returns your discord id number<br>
 
 MyAnimeList Search Commands
 =====
@@ -20,6 +16,18 @@ MyAnimeList Search Commands
 * ```{query}```: same as `<query>`, but looks for manga instead<br>
 * ```[query]```: same as `<query>`, but looks for voice actors instead
 
+
+Admin Commands
+=====
+(These commands will only work for the Owner of a server and the ```ADMINID``` specified in the .env)
+* ```!purge (number)```: Purges a number of messages from the chat. Only available to the server owner. Currently set with a maximum of 10 messages to prevent accidental deleting of whole text channel's history.<br>
+* ```!movechat (number) #(channel)```: Much like purge, but will also send all the deleted messages to another channel. The maximum amount for messages is 50. Note that any attachments will disappear, and attachment links wont work anymore, as discord doesnt allow attachments to be accessable after the message is deleted.<br>
+* ```!delete (message id)```: Deletes a message<br>
+* ```!pin (message id)```: Pins a message<br>
+* ```!unpin (message id)```: Unpins a message<br>
+
+## Other commands
+* ```!nh (nhentai book id)```: looks up tags on a nhentai book
 
 ## Note before installation
 For auto command deletion, make sure that the bot is Authorised to Manage Messages, either when you generate the bot invite link or add it to the bot role later. You may skip this or disable its ability to manage messages if you would not like this feature enabled.

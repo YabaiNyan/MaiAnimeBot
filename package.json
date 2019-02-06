@@ -17,9 +17,11 @@
   },
   "homepage": "https://github.com/YabaiNyan/MaiAnimeBot#readme",
   "dependencies": {
+    "cheerio": "^1.0.0-rc.2",
     "discord.js": "^11.4.2",
     "dotenv": "^6.2.0",
     "mal-scraper": "^2.4.5",
-    "node-myanimelist": "^1.1.1"
+    "node-myanimelist": "^1.1.1",
+    "superagent": "^4.1.0"
   }
 }
