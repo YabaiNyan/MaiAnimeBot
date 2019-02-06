@@ -40,4 +40,4 @@ Installation
 4) To start, run ```node MaiAB.js``` or ```npm test```
 
 ## Credits
-* [__cthuluhoop123__](https://github.com/cthuluhoop123) for [code cleanup and refactoring](https://github.com/YabaiNyan/MaiAnimeBot/pull/1) and [even more cleanup](https://github.com/YabaiNyan/MaiAnimeBot/pull/2)
+* [__cthuluhoop123__](https://github.com/cthuluhoop123) for [code cleanup and refactoring](https://github.com/YabaiNyan/MaiAnimeBot/pull/1), [even more cleanup](https://github.com/YabaiNyan/MaiAnimeBot/pull/2), and [some cleanups](https://github.com/YabaiNyan/MaiAnimeBot/pull/3)
