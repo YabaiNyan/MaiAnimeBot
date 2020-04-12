@@ -253,7 +253,12 @@ class MaiAnimeList {
                 if (ranked == null) {
                     ranked = "N/A"
                 }
-                var score = data.score.toString()
+                if (score != null) {
+                    var score = data.score.toString()
+                } else {
+                    score = "N/A"
+                }
+                
                 var synopsis = toTweetLength(data.synopsis)
                 message.channel.send({
                     content: url,
